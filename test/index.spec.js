@@ -1,16 +1,17 @@
 const app = require('./support/express');
-const utils = require('./support/utilsUser');
+const utils = require('./support/utils');
 const request = require('supertest');
 
 describe('Devise authentication tests', () => {
   let userInfo;
 
-  beforeAll(() => {
-    // userInfo = utils.createUser();
+  beforeAll(async () => {
+    const headers = await utils.createUser();
+
     userInfo = {
-      uid: 'carlos@zrp.com.br',
-      client: 'YnGQlR5KyYbPlHuNNR5PhQ',
-      token: 'VufRzOxQ5Mx-av0uQPcIcA',
+      uid: headers.uid,
+      client: headers.client,
+      token: headers['access-token'],
     };
   });
 
@@ -27,6 +28,22 @@ describe('Devise authentication tests', () => {
 
     test('can access routes', () => {
       expect(response.statusCode).toBe(200);
+    });
+  });
+
+  describe('with invalid token', () => {
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .get('/')
+        .set('uid', userInfo.uid)
+        .set('client', userInfo.client)
+        .set('access-token', userInfo.token + 'wrong');
+    });
+
+    test('can not access routes', () => {
+      expect(response.statusCode).toBe(401);
     });
   });
 });

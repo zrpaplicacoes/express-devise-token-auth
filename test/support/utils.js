@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const deviseServer = 'localhost:3000';
+const {deviseURL, deviseScope, deviseFor} = require('./variables');
 
 const userData = {
   'email': `zrp${Date.now()}@zrp.com.br`,
@@ -10,9 +10,9 @@ const userData = {
 };
 
 function createUser() {
-  return axios.post(`${deviseServer}/v1/auth/indicator`, userData)
+  return axios.post(`${deviseURL}/${deviseScope}/auth/${deviseFor}`, userData)
     .then((response) => {
-      console.log(response.headers);
+      return (response.headers);
     })
     .catch((err) => {
       console.error(err);

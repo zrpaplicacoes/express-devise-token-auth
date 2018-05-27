@@ -48,6 +48,7 @@ function _checkToken(uid, client, token) {
             return response.data;
           })
           .catch((error) => {
+            if (error.response.status === 401) return error.response.data;
             console.error('Error on checkToken', error);
           });
 };
