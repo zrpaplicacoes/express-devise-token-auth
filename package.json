@@ -1,7 +1,7 @@
 {
   "name": "express-devise-token-auth",
   "version": "1.0.0",
-  "description": "Express middlewar that  authenticate with Devise Token Auth",
+  "description": "Express middleware that  authenticate with Devise Token Auth",
   "main": "index.js",
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/jest --runInBand --forceExit",
@@ -27,6 +27,11 @@
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
-    "jest": "^23.0.0"
+    "express": "^4.16.3",
+    "jest": "^23.0.0",
+    "supertest": "^3.1.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }
