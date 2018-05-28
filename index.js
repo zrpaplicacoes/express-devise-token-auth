@@ -17,6 +17,7 @@ async function authentication(req, res, next) {
   const authStatus = await _checkToken(uid, client, token);
 
   if (authStatus.success === true) {
+    req.user = authStatus.data;
     next();
   } else {
     console.info('Attempt Unauthorized Access', authStatus.errors);
@@ -53,8 +54,8 @@ function _checkToken(uid, client, token) {
           })
           .catch((error) => {
             if (error.response.status === 401) return error.response.data;
-            console.error('Error on checkToken', error.config);
-            throw (error.stack);
+            console.error('Error on checkToken');
+            throw (error);
           });
 };
 
