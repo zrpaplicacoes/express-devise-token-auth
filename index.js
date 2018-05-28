@@ -24,7 +24,7 @@ async function authentication(req, res, next) {
   }
 };
 
-/* function use(customConfig) {
+function customAuth(customConfig) {
   if (customConfig.deviseURL !== undefined) {
     config.deviseURL = customConfig.deviseURL;
   }
@@ -32,7 +32,11 @@ async function authentication(req, res, next) {
   if (customConfig.deviseScope !== undefined) {
     config.deviseScope = customConfig.deviseScope;
   }
-}; */
+
+  if (customConfig.deviseFor !== undefined) {
+    config.deviseFor = customConfig.deviseFor;
+  }
+};
 
 function _checkToken(uid, client, token) {
   const url = (`${config.deviseURL}/
@@ -49,10 +53,12 @@ function _checkToken(uid, client, token) {
           })
           .catch((error) => {
             if (error.response.status === 401) return error.response.data;
-            console.error('Error on checkToken', error);
+            console.error('Error on checkToken', error.config);
+            throw (error.stack);
           });
 };
 
 module.exports = {
   authentication,
+  customAuth,
 };

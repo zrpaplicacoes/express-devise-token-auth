@@ -33,5 +33,10 @@
   },
   "dependencies": {
     "axios": "^0.18.0"
-  }
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
 }
