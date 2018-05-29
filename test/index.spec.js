@@ -1,17 +1,17 @@
 const app = require('./support/express');
-const utils = require('./support/utils');
+// const utils = require('./support/utils');
 const request = require('supertest');
 
 describe('Devise authentication tests', () => {
   let userInfo;
 
   beforeAll(async () => {
-    const headers = await utils.createUser();
+    // const headers = await utils.createUser();
 
     userInfo = {
-      uid: headers.uid,
-      client: headers.client,
-      token: headers['access-token'],
+      uid: 'carloslima@zrp.com.br',
+      client: 'IPxcM8N29oeA-oFr7JiBTA',
+      token: 'lD-798sezWm3PMEoGCEKww',
     };
   });
 
