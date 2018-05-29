@@ -1,6 +1,6 @@
 'use strict';
 
-const axios = require('axios');
+const http = require('http');
 
 // verificar url para user e admin
 
@@ -13,10 +13,16 @@ const config = {
 async function authentication(req, res, next) {
   const {client, uid} = req.headers;
   const token = req.get('access-token');
+  let authStatus = {};
 
-  const authStatus = await _checkToken(uid, client, token);
+  try {
+    authStatus = await _checkToken(uid, client, token);
+  } catch (err) {
+    authStatus.success = false;
+    // throw (err); tratar erro
+  }
 
-  if (authStatus.success === true) {
+  if (authStatus.success) {
     req.user = authStatus.data;
     next();
   } else {
@@ -48,16 +54,23 @@ function _checkToken(uid, client, token) {
                 &client=${client}
                 &access-token=${token}`).replace(/\s+/g, '');
 
-  return axios.get(url)
-          .then((response) => {
-            return response.data;
-          })
-          .catch((error) => {
-            if (error.response.status === 401) return error.response.data;
-            console.error('Error on checkToken');
-            throw (error);
-          });
-};
+  return new Promise((resolve, reject) => {
+    http.get(url, (resp) => {
+      let data = '';
+
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      resp.on('end', () => {
+        resolve(JSON.parse(data));
+      });
+    }).on('error', (error) => {
+      console.error('Error on checkToken');
+      reject(error);
+    });
+  });
+}
 
 module.exports = {
   authentication,
