@@ -1,6 +1,5 @@
 const app = require('express')();
 const {authentication, customAuth} = require('../../index');
-const {apiPORT} = require('./variables');
 
 customAuth({
   deviseURL: 'http://localhost:3000',
@@ -11,9 +10,9 @@ customAuth({
 app.use(authentication);
 
 app.get('/', (req, res) => {
-  res.send('ok');
+  res.send(req.user);
 });
 
-app.listen(apiPORT);
+app.listen(8080);
 
 module.exports = app;

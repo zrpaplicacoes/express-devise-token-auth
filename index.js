@@ -19,7 +19,7 @@ async function authentication(req, res, next) {
     authStatus = await _checkToken(uid, client, token);
   } catch (err) {
     authStatus.success = false;
-    // throw (err); tratar erro
+    throw (err); // tratar erro
   }
 
   if (authStatus.success) {
@@ -53,6 +53,8 @@ function _checkToken(uid, client, token) {
                 uid=${uid}
                 &client=${client}
                 &access-token=${token}`).replace(/\s+/g, '');
+
+// replace(/\/\//g, '/')              
 
   return new Promise((resolve, reject) => {
     http.get(url, (resp) => {
