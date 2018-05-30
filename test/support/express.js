@@ -13,6 +13,4 @@ app.get('/', (req, res) => {
   res.send(req.user);
 });
 
-app.listen(8080);
-
 module.exports = app;

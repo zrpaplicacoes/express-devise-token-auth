@@ -20,28 +20,40 @@ describe('Devise authentication tests', () => {
       const path = (`/v1/auth/indicator/validate_token?
                    uid=${userInfo.uid}
                    &client=${userInfo.client}
-                   &access-token=${userInfo.token}`).replace(/\s+/g, '');
+                   &access-token=${userInfo.token}
+                   &expiry=3200`).replace(/\s+/g, '');
+      const successPayload = {
+        success: true,
+        data:
+          {
+            id: 28,
+            provider: 'email',
+            uid: 'zrp@zrp.com.br',
+            name: null,
+            nickname: null,
+            image: null,
+            email: 'zrp@zrp.com.br',
+          },
+      };
+
+      const successHeaders = {
+        'access-token': 'new-access-token',
+        'uid': userInfo.uid,
+        'client': 'new-client',
+        'expiry': 3200,
+      };
+
 
       nock('http://localhost:3000')
       .get(path)
-      .reply(200, {success: true,
-                    data:
-                    {id: 28,
-                      provider: 'email',
-                      uid: 'zrp@zrp.com.br',
-                      name: null,
-                      nickname: null,
-                      image: null,
-                      email: 'zrp@zrp.com.br',
-                    },
-                  }
-      );
+      .reply(200, successPayload, successHeaders);
 
       response = await request(app)
         .get('/')
         .set('uid', userInfo.uid)
         .set('client', userInfo.client)
-        .set('access-token', userInfo.token);
+        .set('access-token', userInfo.token)
+        .set('expiry', 3200);
     });
 
     test('can access routes', () => {
@@ -53,6 +65,13 @@ describe('Devise authentication tests', () => {
       expect(response.body.uid).toBe('zrp@zrp.com.br');
       expect(response.body.id).not.toBe('28');
     });
+
+    test('should adds new headers information returned from server', () => {
+      expect(response.headers['access-token']).toBe('new-access-token');
+      expect(response.headers['client']).toBe('new-client');
+      expect(response.headers['uid']).toBe(userInfo.uid);
+      expect(response.headers['expiry']).toBe('3200');
+    });
   });
 
   describe('with invalid token', () => {
@@ -62,7 +81,8 @@ describe('Devise authentication tests', () => {
       const path = (`/v1/auth/indicator/validate_token?
                    uid=${userInfo.uid}
                    &client=${userInfo.client}
-                   &access-token=${userInfo.token}wrong`).replace(/\s+/g, '');
+                   &access-token=${userInfo.token}wrong
+                   &expiry=3200`).replace(/\s+/g, '');
 
       nock('http://localhost:3000')
       .get(path)
@@ -76,7 +96,8 @@ describe('Devise authentication tests', () => {
         .get('/')
         .set('uid', userInfo.uid)
         .set('client', userInfo.client)
-        .set('access-token', userInfo.token + 'wrong');
+        .set('access-token', userInfo.token + 'wrong')
+        .set('expiry', 3200);
     });
 
     test('can not access routes', () => {
