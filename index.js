@@ -52,9 +52,7 @@ function _checkToken(uid, client, token) {
                 /validate_token?
                 uid=${uid}
                 &client=${client}
-                &access-token=${token}`).replace(/\s+/g, '');
-
-// replace(/\/\//g, '/')              
+                &access-token=${token}`).replace(/(\w)\/\//g, '$1/').replace(/\s+/g, '');
 
   return new Promise((resolve, reject) => {
     http.get(url, (resp) => {
