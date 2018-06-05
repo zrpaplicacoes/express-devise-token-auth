@@ -43,7 +43,6 @@ describe('Devise authentication tests', () => {
         'expiry': 3200,
       };
 
-
       nock('http://localhost:3000')
       .get(path)
       .reply(200, successPayload, successHeaders);
