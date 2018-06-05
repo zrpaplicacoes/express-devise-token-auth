@@ -21,7 +21,7 @@ The setup is pretty straight forward and easy, you just need to:
 
 ### Protecting all routes
 
-```
+```js
 const app = require('express')();
 const { authentication, customAuth } = require('express-devise-token-auth');
 
@@ -46,7 +46,7 @@ module.exports = app;
 ### Protecting just some routes
 
 
-```
+```js
 const app = require('express')();
 const { authentication, customAuth } = require('express-devise-token-auth');
 
