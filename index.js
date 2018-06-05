@@ -1,21 +1,19 @@
 'use strict';
 
-const http = require('http');
-
-// verificar url para user e admin
+const https = require('https');
 
 const config = {
-  deviseURL: 'http://localhost:3000',
+  deviseURL: 'https://localhost:3000',
   deviseScope: 'v1',
   deviseFor: 'indicator',
 };
 
 async function authentication(req, res, next) {
-  const { client, uid, expiry } = req.headers;
+  const {client, uid, expiry} = req.headers;
   const token = req.get('access-token');
   let authInfo = {
     body: {},
-    headers: {}
+    headers: {},
   };
 
   try {
@@ -63,7 +61,7 @@ function _checkToken(uid, client, token, expiry) {
                 &expiry=${expiry}`).replace(/(\w)\/\//g, '$1/').replace(/\s+/g, '');
 
   return new Promise(function(resolve, reject) {
-    http.get(url, function(resp) {
+    https.get(url, function(resp) {
       let data = '';
 
       resp.on('data', function(chunk) {
@@ -71,7 +69,7 @@ function _checkToken(uid, client, token, expiry) {
       });
 
       resp.on('end', function() {
-        resolve({ body: JSON.parse(data), headers: resp.headers });
+        resolve({body: JSON.parse(data), headers: resp.headers});
       });
     }).on('error', (error) => {
       console.error('Error on checkToken');
