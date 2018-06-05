@@ -1,6 +1,6 @@
 {
   "name": "express-devise-token-auth",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Express middleware that authenticates with Devise Token Auth",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,10 @@
     "auth"
   ],
   "author": "ZRP Aplicacões",
+  "contributors": [
+    "Carlos Sechi <carlossechi@hotmail.com> (https://github.com/clsechi)",
+    "Rafael Costella <rafael.costella@zrp.com.br> (https://github.com/RafaelTCostella)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zrpaplicacoes/express-devise-token-auth/issues"
