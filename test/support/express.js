@@ -2,7 +2,7 @@ const app = require('express')();
 const {authentication, customAuth} = require('../../index');
 
 customAuth({
-  deviseURL: 'https://localhost:3000',
+  deviseURL: 'https://myapi.com.br:443',
   deviseScope: 'v1',
   deviseFor: 'indicator',
 });

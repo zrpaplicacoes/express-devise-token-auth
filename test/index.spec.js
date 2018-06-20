@@ -17,11 +17,8 @@ describe('Devise authentication tests', () => {
     let response;
 
     beforeAll(async () => {
-      const path = (`/v1/auth/indicator/validate_token?
-                   uid=${userInfo.uid}
-                   &client=${userInfo.client}
-                   &access-token=${userInfo.token}
-                   &expiry=3200`).replace(/\s+/g, '');
+      const path = '/v1/auth/indicator/validate_token';
+
       const successPayload = {
         success: true,
         data:
@@ -43,7 +40,7 @@ describe('Devise authentication tests', () => {
         'expiry': 3200,
       };
 
-      nock('http://localhost:3000')
+      nock('https://myapi.com.br:443')
       .get(path)
       .reply(200, successPayload, successHeaders);
 
@@ -77,13 +74,9 @@ describe('Devise authentication tests', () => {
     let response;
 
     beforeAll(async () => {
-      const path = (`/v1/auth/indicator/validate_token?
-                   uid=${userInfo.uid}
-                   &client=${userInfo.client}
-                   &access-token=${userInfo.token}wrong
-                   &expiry=3200`).replace(/\s+/g, '');
+      const path = '/v1/auth/indicator/validate_token';
 
-      nock('http://localhost:3000')
+      nock('https://myapi.com.br:443')
       .get(path)
       .reply(401, {
                     'success': false,
