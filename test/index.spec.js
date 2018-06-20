@@ -52,7 +52,7 @@ describe('Devise authentication tests', () => {
         .set('expiry', 3200);
     });
 
-    test.only('can access routes', () => {
+    test('can access routes', () => {
       expect(response.statusCode).toBe(200);
     });
 

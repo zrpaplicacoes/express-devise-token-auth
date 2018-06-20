@@ -51,6 +51,30 @@ function customAuth(customConfig) {
   }
 };
 
+function makeRequest(options) {
+  const requestor = config.deviseURL.match('https') ? https : http;
+
+  return new Promise((resolve, reject) => {
+    const res = requestor.request(options, function(resp) {
+      let data = '';
+
+      resp.on('data', function(chunk) {
+        data += chunk;
+      });
+
+      resp.on('end', function() {
+        resolve({body: JSON.parse(data), headers: resp.headers});
+      });
+    });
+
+    res.on('error', (error) => {
+      reject(error);
+    });
+
+    res.end();
+  });
+}
+
 function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
   let requestor, hostname, port;
 
@@ -65,54 +89,20 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
     Object.assign(headers, {correspondent_id});
   }
 
-  if (config.deviseURL.match('https')) {
-    requestor = https;
-  } else {
-    requestor = http;
-  }
-
   [hostname, port] = config.deviseURL.replace('https://', '').replace('http://', '').split(':');
-
 
   port = port || 80;
   port = parseInt(port);
 
+  const options = {
+    hostname,
+    port,
+    path: `/${config.deviseScope}/auth/${config.deviseFor}/validate_token`,
+    method: 'GET',
+    headers,
+  };
 
-  return new Promise(function(resolve, reject) {
-    const options = {
-      hostname,
-      port,
-      path: `/${config.deviseScope}/auth/${config.deviseFor}/validate_token`,
-      method: 'GET',
-      headers,
-    };
-
-    console.log(options);
-
-    const res = requestor.request(options, function(resp) {
-      let data = '';
-      console.log(resp);
-
-      resp.on('data', function(chunk) {
-        data += chunk;
-        console.log('chunk', chunk);
-      });
-
-      resp.on('error', function(error) {
-        console.log(error);
-        reject(error);
-      });
-
-      resp.on('end', function() {
-        resolve({body: JSON.parse(data), headers: resp.headers});
-      });
-    });
-
-    res.on('error', (error) => {
-      console.error('Error on checkToken');
-      reject(error);
-    });
-  });
+  return makeRequest(options);
 }
 
 module.exports = {
