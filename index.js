@@ -1,15 +1,16 @@
 'use strict';
 
+const http = require('http');
 const https = require('https');
 
 const config = {
-  deviseURL: 'https://localhost:3000',
+  deviseURL: 'http://localhost:3000',
   deviseScope: 'v1',
   deviseFor: 'indicator',
 };
 
 async function authentication(req, res, next) {
-  const {client, uid, expiry} = req.headers;
+  const {client, uid, expiry, correspondent_id} = req.headers;
   const token = req.get('access-token');
   let authInfo = {
     body: {},
@@ -17,7 +18,7 @@ async function authentication(req, res, next) {
   };
 
   try {
-    authInfo = await _checkToken(uid, client, token, expiry);
+    authInfo = await _checkToken(uid, client, token, expiry, correspondent_id);
   } catch (err) {
     authInfo.body.success = false;
     throw (err);
@@ -50,28 +51,64 @@ function customAuth(customConfig) {
   }
 };
 
-function _checkToken(uid, client, token, expiry) {
-  const url = (`${config.deviseURL}/
-                ${config.deviseScope}/auth/
-                ${config.deviseFor}
-                /validate_token?
-                uid=${uid}
-                &client=${client}
-                &access-token=${token}
-                &expiry=${expiry}`).replace(/(\w)\/\//g, '$1/').replace(/\s+/g, '');
+function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
+  let requestor, hostname, port;
+
+  const headers = {
+    uid,
+    client,
+    token,
+    expiry,
+  };
+
+  if (correspondent_id) {
+    Object.assign(headers, {correspondent_id});
+  }
+
+  if (config.deviseURL.match('https')) {
+    requestor = https;
+  } else {
+    requestor = http;
+  }
+
+  [hostname, port] = config.deviseURL.replace('https://', '').replace('http://', '').split(':');
+
+
+  port = port || 80;
+  port = parseInt(port);
+
 
   return new Promise(function(resolve, reject) {
-    https.get(url, function(resp) {
+    const options = {
+      hostname,
+      port,
+      path: `/${config.deviseScope}/auth/${config.deviseFor}/validate_token`,
+      method: 'GET',
+      headers,
+    };
+
+    console.log(options);
+
+    const res = requestor.request(options, function(resp) {
       let data = '';
+      console.log(resp);
 
       resp.on('data', function(chunk) {
         data += chunk;
+        console.log('chunk', chunk);
+      });
+
+      resp.on('error', function(error) {
+        console.log(error);
+        reject(error);
       });
 
       resp.on('end', function() {
         resolve({body: JSON.parse(data), headers: resp.headers});
       });
-    }).on('error', (error) => {
+    });
+
+    res.on('error', (error) => {
       console.error('Error on checkToken');
       reject(error);
     });
