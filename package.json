@@ -1,6 +1,6 @@
 {
   "name": "express-devise-token-auth",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Express middleware that authenticates with Devise Token Auth",
   "main": "index.js",
   "scripts": {
