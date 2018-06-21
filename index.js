@@ -81,7 +81,7 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
   const headers = {
     uid,
     client,
-    token,
+    'access-token': token,
     expiry,
   };
 
