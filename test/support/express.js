@@ -4,7 +4,6 @@ const {authentication, customAuth} = require('../../index');
 customAuth({
   deviseURL: 'https://myapi.com.br:443',
   deviseScope: 'v1',
-  deviseFor: 'indicator',
 });
 
 app.use(authentication);

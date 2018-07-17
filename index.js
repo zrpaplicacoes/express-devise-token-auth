@@ -6,11 +6,10 @@ const https = require('https');
 const config = {
   deviseURL: 'http://localhost:3000',
   deviseScope: 'v1',
-  deviseFor: 'indicator',
 };
 
 async function authentication(req, res, next) {
-  const {client, uid, expiry, correspondent_id} = req.headers;
+  const {client, uid, expiry, user_type,  correspondent_id} = req.headers;
   const token = req.get('access-token');
   let authInfo = {
     body: {},
@@ -18,7 +17,7 @@ async function authentication(req, res, next) {
   };
 
   try {
-    authInfo = await _checkToken(uid, client, token, expiry, correspondent_id);
+    authInfo = await _checkToken(uid, client, token, expiry,  user_type, correspondent_id);
   } catch (err) {
     authInfo.body.success = false;
     throw (err);
@@ -44,10 +43,6 @@ function customAuth(customConfig) {
 
   if (customConfig.deviseScope !== undefined) {
     config.deviseScope = customConfig.deviseScope;
-  }
-
-  if (customConfig.deviseFor !== undefined) {
-    config.deviseFor = customConfig.deviseFor;
   }
 };
 
@@ -75,7 +70,7 @@ function makeRequest(options) {
   });
 }
 
-function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
+function _checkToken(uid, client, token, expiry, user_type = 'indicator', correspondent_id = undefined) {
   let requestor, hostname, port;
 
   const headers = {
@@ -97,7 +92,7 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
   const options = {
     hostname,
     port,
-    path: `/${config.deviseScope}/auth/${config.deviseFor}/validate_token`,
+    path: `/${config.deviseScope}/auth/${user_type}/validate_token`,
     method: 'GET',
     headers,
   };
