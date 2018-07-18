@@ -69,7 +69,7 @@ describe('Devise authentication tests', () => {
     });
   });
 
-  describe.only('with invalid token', () => {
+  describe('with invalid token', () => {
     let response;
 
     beforeAll(async () => {
