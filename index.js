@@ -1,80 +1,65 @@
+/* eslint-disable camelcase */
 'use strict';
 
 const http = require('http');
 const https = require('https');
 
-const config = {
-  deviseURL: 'http://localhost:3000',
-  deviseScope: 'v1',
-  deviseFor: 'indicator',
-};
+function authentication(config) {
+  return (req, res, next) => {
+    const {
+      client,
+      uid,
+      expiry,
+      correspondent_id,
+    } = req.headers;
+    const token = req.get('access-token');
 
-async function authentication(req, res, next) {
-  const {client, uid, expiry, correspondent_id} = req.headers; /* eslint-disable-line */ 
-  const token = req.get('access-token');
+    if (!client || !uid || !expiry || !token) {
+      console.info('Attempt Unauthorized Access');
+      res.status(401).send('Unauthorized');
+      return;
+    }
 
-  if (!client || !uid || !expiry || !token) {
-    console.info('Attempt Unauthorized Access');
-    res.status(401).send('Unauthorized');
-    return;
-  }
-
-  let authInfo = {
-    body: {},
-    headers: {},
+    _checkToken(uid, client, token, expiry, correspondent_id, config).then((authInfo) => {
+      req.user = authInfo.body.data;
+      res.set('access-token', authInfo.headers['access-token']);
+      res.set('client', authInfo.headers['client']);
+      res.set('expiry', authInfo.headers['expiry']);
+      res.set('uid', authInfo.headers['uid']);
+      next();
+    }).catch((authInfo) => {
+      res.status(401).send('Unauthorized');
+    });
   };
-
-  try {
-    authInfo = await _checkToken(uid, client, token, expiry, correspondent_id);
-  } catch (err) {
-    authInfo.body.success = false;
-    throw (err);
-  }
-
-  if (authInfo.body.success) {
-    req.user = authInfo.body.data;
-    res.set('access-token', authInfo.headers['access-token']);
-    res.set('client', authInfo.headers['client']);
-    res.set('expiry', authInfo.headers['expiry']);
-    res.set('uid', authInfo.headers['uid']);
-    next();
-  } else {
-    console.info('Attempt Unauthorized Access', authInfo.body.errors);
-    res.status(401).send('Unauthorized');
-  }
 };
 
-function customAuth(customConfig) {
-  if (customConfig.deviseURL !== undefined) {
-    config.deviseURL = customConfig.deviseURL;
-  }
-
-  if (customConfig.deviseScope !== undefined) {
-    config.deviseScope = customConfig.deviseScope;
-  }
-
-  if (customConfig.deviseFor !== undefined) {
-    config.deviseFor = customConfig.deviseFor;
-  }
-};
-
-function makeRequest(options) {
+function makeRequest(options, config) {
   const requestor = config.deviseURL.match('https') ? https : http;
-
   return new Promise((resolve, reject) => {
-    const res = requestor.request(options, function(resp) {
+    const res = requestor.request(options, (resp) => {
       let data = '';
 
-      resp.on('data', function(chunk) {
+      resp.on('data', (chunk) => {
         data += chunk;
       });
 
-      resp.on('end', function() {
-        resolve({body: JSON.parse(data), headers: resp.headers});
+      resp.on('end', () => {
+        if (resp.statusCode !== 200) {
+          reject({
+            status: resp.statusCode,
+            body: JSON.parse(data),
+          });
+        } else {
+          resolve({
+            body: JSON.parse(data),
+            headers: resp.headers,
+          });
+        }
       });
     });
 
     res.on('error', (error) => {
+      console.log(error);
       reject(error);
     });
 
@@ -82,7 +67,7 @@ function makeRequest(options) {
   });
 }
 
-function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
+function _checkToken(uid, client, token, expiry, correspondent_id = undefined, config) {
   let hostname;
   let port;
 
@@ -93,12 +78,13 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
     expiry,
   };
 
-  if (correspondent_id) { /* eslint-disable-line */ 
-    Object.assign(headers, {correspondent_id});
+  if (correspondent_id) {
+    Object.assign(headers, {
+      correspondent_id,
+    });
   }
 
   [hostname, port] = config.deviseURL.replace('https://', '').replace('http://', '').split(':');
-
   port = port || 80;
   port = parseInt(port);
 
@@ -109,11 +95,7 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
     method: 'GET',
     headers,
   };
-
-  return makeRequest(options);
+  return makeRequest(options, config);
 }
 
-module.exports = {
-  authentication,
-  customAuth,
-};
+module.exports = authentication;

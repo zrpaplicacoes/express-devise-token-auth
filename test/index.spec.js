@@ -21,16 +21,15 @@ describe('Devise authentication tests', () => {
 
       const successPayload = {
         success: true,
-        data:
-          {
-            id: 28,
-            provider: 'email',
-            uid: 'zrp@zrp.com.br',
-            name: null,
-            nickname: null,
-            image: null,
-            email: 'zrp@zrp.com.br',
-          },
+        data: {
+          id: 28,
+          provider: 'email',
+          uid: 'zrp@zrp.com.br',
+          name: null,
+          nickname: null,
+          image: null,
+          email: 'zrp@zrp.com.br',
+        },
       };
 
       const successHeaders = {
@@ -41,8 +40,8 @@ describe('Devise authentication tests', () => {
       };
 
       nock('https://myapi.com.br:443')
-      .get(path)
-      .reply(200, successPayload, successHeaders);
+        .get(path)
+        .reply(200, successPayload, successHeaders);
 
       response = await request(app)
         .get('/')
@@ -70,19 +69,18 @@ describe('Devise authentication tests', () => {
     });
   });
 
-  describe('with invalid token', () => {
+  describe.only('with invalid token', () => {
     let response;
 
     beforeAll(async () => {
       const path = '/v1/auth/indicator/validate_token';
 
       nock('https://myapi.com.br:443')
-      .get(path)
-      .reply(401, {
-                    'success': false,
-                    'errors': ['Dados de login inválidos.'],
-                  }
-      );
+        .get(path)
+        .reply(401, {
+          'success': false,
+          'errors': ['Dados de login inválidos.'],
+        });
 
       response = await request(app)
         .get('/')
