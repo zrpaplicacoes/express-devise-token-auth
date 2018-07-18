@@ -10,8 +10,15 @@ const config = {
 };
 
 async function authentication(req, res, next) {
-  const {client, uid, expiry, correspondent_id} = req.headers;
+  const {client, uid, expiry, correspondent_id} = req.headers; /* eslint-disable-line */ 
   const token = req.get('access-token');
+
+  if (!client || !uid || !expiry || !token) {
+    console.info('Attempt Unauthorized Access');
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
   let authInfo = {
     body: {},
     headers: {},
@@ -76,7 +83,8 @@ function makeRequest(options) {
 }
 
 function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
-  let requestor, hostname, port;
+  let hostname;
+  let port;
 
   const headers = {
     uid,
@@ -85,7 +93,7 @@ function _checkToken(uid, client, token, expiry, correspondent_id = undefined) {
     expiry,
   };
 
-  if (correspondent_id) {
+  if (correspondent_id) { /* eslint-disable-line */ 
     Object.assign(headers, {correspondent_id});
   }
 
