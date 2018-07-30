@@ -23,15 +23,15 @@ The setup is pretty straight forward and easy, you just need to:
 
 ```js
 const app = require('express')();
-const { authentication, customAuth } = require('express-devise-token-auth');
+const authentication = require('express-devise-token-auth');
 
-customAuth({
+const customAuth = {
   deviseURL: 'http://localhost:3000',
   deviseScope: 'v1',
   deviseFor: 'indicator',
-});
+};
 
-app.use(authentication);
+app.use(authentication(customAuth))
 
 app.get('/', (req, res) => {
   res.send(req.user);
@@ -48,17 +48,17 @@ module.exports = app;
 
 ```js
 const app = require('express')();
-const { authentication, customAuth } = require('express-devise-token-auth');
+const authentication = require('express-devise-token-auth');
 
 const adminRoutes = require('../routes');
 
-customAuth({
+const customAuth = {
   deviseURL: 'http://localhost:3000',
   deviseScope: 'v1',
   deviseFor: 'indicator',
-});
+};
 
-app.get('/admin', authentication, adminRoutes);
+app.get('/admin', authentication(customAuth), adminRoutes);
 
 app.listen(8080);
 

@@ -1,19 +1,11 @@
 module.exports = {
-  "extends": "google",
-  "parserOptions": {
-    "ecmaVersion": 8,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
+    "extends": "airbnb-base",
+    "rules": {
+      "no-underscore-dangle": "off",
+      "no-console": "off",
+      "camelcase": "off",
     },
-  },
-  "env": {
-    "node": true,
-    "es6": true,
-  },
-  "rules": {
-    "require-jsdoc": 0,
-    "new-cap": 0,
-    "max-len": ["error", { "code": 100 }]
-  }
+    "env": {
+      "jest": true,
+    }
 };
