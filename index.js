@@ -22,10 +22,24 @@ function authentication(config) {
 
     _checkToken(uid, client, token, expiry, correspondent_id, config).then((authInfo) => {
       req.user = authInfo.body.data;
-      res.set('access-token', authInfo.headers['access-token']);
-      res.set('client', authInfo.headers['client']);
-      res.set('expiry', authInfo.headers['expiry']);
-      res.set('uid', authInfo.headers['uid']);
+
+      /*
+      * Solve problem with empty headers response from devise-token-auth
+      * The problem is described here:
+      * https://github.com/lynndylanhurley/devise_token_auth/issues/1053
+      */
+
+      if (authInfo.headers.client) {
+        res.set('access-token', authInfo.headers['access-token']);
+        res.set('client', authInfo.headers.client);
+        res.set('expiry', authInfo.headers.expiry);
+        res.set('uid', authInfo.headers.uid);
+      } else {
+        res.set('access-token', token);
+        res.set('client', client);
+        res.set('expiry', expiry);
+        res.set('uid', uid);
+      }
       next();
     }).catch((authInfo) => {
       res.status(401).send('Unauthorized');
