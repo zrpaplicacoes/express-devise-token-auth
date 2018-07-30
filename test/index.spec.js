@@ -1,6 +1,6 @@
-const app = require('./support/express');
 const request = require('supertest');
 const nock = require('nock');
+const app = require('./support/express');
 
 describe('Devise authentication tests', () => {
   const userInfo = {
@@ -30,9 +30,9 @@ describe('Devise authentication tests', () => {
 
       const successHeaders = {
         'access-token': 'new-access-token',
-        'uid': userInfo.uid,
-        'client': 'new-client',
-        'expiry': 3200,
+        uid: userInfo.uid,
+        client: 'new-client',
+        expiry: 3200,
       };
 
       nock('https://myapi.com.br:443')
@@ -57,9 +57,9 @@ describe('Devise authentication tests', () => {
 
     test('should adds new headers information returned from server', () => {
       expect(response.headers['access-token']).toBe('new-access-token');
-      expect(response.headers['client']).toBe('new-client');
-      expect(response.headers['uid']).toBe(userInfo.uid);
-      expect(response.headers['expiry']).toBe('3200');
+      expect(response.headers.client).toBe('new-client');
+      expect(response.headers.uid).toBe(userInfo.uid);
+      expect(response.headers.expiry).toBe('3200');
     });
   });
 
@@ -91,9 +91,9 @@ describe('Devise authentication tests', () => {
 
     test('should adds new headers information returned from server', () => {
       expect(response.headers['access-token']).toBe(userInfo.token);
-      expect(response.headers['client']).toBe(userInfo.client);
-      expect(response.headers['uid']).toBe(userInfo.uid);
-      expect(response.headers['expiry']).toBe('3200');
+      expect(response.headers.client).toBe(userInfo.client);
+      expect(response.headers.uid).toBe(userInfo.uid);
+      expect(response.headers.expiry).toBe('3200');
     });
   });
 
@@ -106,15 +106,15 @@ describe('Devise authentication tests', () => {
       nock('https://myapi.com.br:443')
         .get(path)
         .reply(401, {
-          'success': false,
-          'errors': ['Dados de login inválidos.'],
+          success: false,
+          errors: ['Dados de login inválidos.'],
         });
 
       response = await request(app)
         .get('/')
         .set('uid', userInfo.uid)
         .set('client', userInfo.client)
-        .set('access-token', userInfo.token + 'wrong')
+        .set('access-token', `${userInfo.token}wrong`)
         .set('expiry', 3200);
     });
 
