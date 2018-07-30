@@ -20,7 +20,8 @@ function authentication(config) {
       return;
     }
 
-    _checkToken(uid, client, token, expiry, correspondent_id, config).then((authInfo) => {
+    _checkToken(uid, client, token, expiry, correspondent_id, config)
+    .then((authInfo) => {
       req.user = authInfo.body.data;
 
       /*
@@ -41,7 +42,7 @@ function authentication(config) {
         res.set('uid', uid);
       }
       next();
-    }).catch((authInfo) => {
+    }).catch(() => {
       res.status(401).send('Unauthorized');
     });
   };

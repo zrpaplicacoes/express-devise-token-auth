@@ -126,4 +126,19 @@ describe('Devise authentication tests', () => {
       expect(response.body).toEqual({});
     });
   });
+
+  describe('with missing headers', () => {
+    let response;
+
+    beforeAll(async () => {
+      response = await request(app)
+        .get('/')
+        .set('uid', userInfo.uid)
+        .set('expiry', 3200);
+    });
+
+    test('can not access routes', () => {
+      expect(response.statusCode).toBe(401);
+    });
+  });
 });
