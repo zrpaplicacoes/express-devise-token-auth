@@ -60,6 +60,7 @@ describe('Devise authentication tests', () => {
       expect(response.headers.client).toBe('new-client');
       expect(response.headers.uid).toBe(userInfo.uid);
       expect(response.headers.expiry).toBe('3200');
+      expect(response.headers['token-type']).toBe('Bearer');
     });
   });
 
@@ -94,6 +95,7 @@ describe('Devise authentication tests', () => {
       expect(response.headers.client).toBe(userInfo.client);
       expect(response.headers.uid).toBe(userInfo.uid);
       expect(response.headers.expiry).toBe('3200');
+      expect(response.headers['token-type']).toBe('Bearer');
     });
   });
 

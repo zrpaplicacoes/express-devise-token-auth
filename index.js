@@ -95,11 +95,13 @@ function authentication(config) {
           res.set('client', authInfo.headers.client);
           res.set('expiry', authInfo.headers.expiry);
           res.set('uid', authInfo.headers.uid);
+          res.set('token-type', 'Bearer');
         } else {
           res.set('access-token', token);
           res.set('client', client);
           res.set('expiry', expiry);
           res.set('uid', uid);
+          res.set('token-type', 'Bearer');
         }
         next();
       }).catch(() => {
