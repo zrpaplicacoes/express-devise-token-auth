@@ -1,10 +1,11 @@
 const app = require('express')();
 const authentication = require('../../index');
 
-const customAuth ={
+const customAuth = {
   deviseURL: 'https://myapi.com.br:443',
   deviseScope: 'v1',
   deviseFor: 'indicator',
+  inner_authorization: 'ABCDE',
 };
 
 app.use(authentication(customAuth));

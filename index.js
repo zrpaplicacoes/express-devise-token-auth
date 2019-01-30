@@ -32,7 +32,6 @@ function makeRequest(options, config) {
   });
 }
 
-
 function _checkToken(uid, client, token, expiry, correspondent_id = undefined, config) {
   let hostname;
   let port;
@@ -71,27 +70,25 @@ function authentication(config) {
       uid,
       expiry,
       correspondent_id,
-      inner_authorization,
     } = req.headers;
 
-    if(inner_authorization) {
-      console.info('Intern authorization required')
-      if(inner_authorization === config.inner_authorization) {
+    const innerAuthorization = req.headers['inner-authorization'];
+
+    if (innerAuthorization) {
+      console.info('Intern authorization required');
+      if (innerAuthorization === config.inner_authorization) {
         console.info('Attempt Authorized Intern Access');
         return next();
-      } else {
-        console.info('Attempt Unauthorized Access');
-        res.status(401).send('Unauthorized');
-        return;
       }
+      console.info('Attempt Unauthorized Access');
+      return res.status(401).send('Unauthorized');
     }
 
     const token = req.get('access-token');
 
     if (!client || !uid || !expiry || !token) {
       console.info('Attempt Unauthorized Access');
-      res.status(401).send('Unauthorized');
-      return;
+      return res.status(401).send('Unauthorized');
     }
 
     _checkToken(uid, client, token, expiry, correspondent_id, config)
@@ -121,6 +118,7 @@ function authentication(config) {
       }).catch(() => {
         res.status(401).send('Unauthorized');
       });
+    return false;
   };
 }
 
